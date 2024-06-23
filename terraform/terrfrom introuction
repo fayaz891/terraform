@@ -1,0 +1,101 @@
+Terraform is IaC which is used to build change and manage infrasructure through safe and consistent way,reusable configuration file using CLI as we create through GUI
+
+benefits
+1) manage infrastructure on multiple cloud platforms
+2) human-readable configuration language
+3) commit terraform configuration file and safely collaborate with infrastructure
+
+Provider is the terraform plugins which interect terrfm with cloud plateform and other services using APIs 
+Providers define individual units of infrastructure
+
+you can create resources from different providers reusable terraform configuration called Module
+
+====>To deploy infrastructure with Terraform
+Scope - Identify the infrastructure
+Author - Write the configuration
+Initialize - Install the plugins Terraform needs
+Plan - Preview the changes
+Apply - Implement the changes
+
+Terraform keep your real infrastructure in state file, Terraform uses the state file to determine the changes to update infrastructure
+
+Terraform allows you to collaborate on your infrastructure with its remote state backends,When you use Terraform Cloud you can securely share your state with your teammates.
+
+You can also connect Terraform Cloud to version control systems (VCSs) like GitHub, GitLab, and others,as you commit in terrfrm configuration it will change infrastructure
+-------------------------------------------------------------
+
+Now install terraform
+
+$ terraform init  #downloads a plugin called a provider
+
+$ terraform apply #provision the changes you made
+
+---
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 4.16"
+    }
+  }
+---
+The terraform {} block contains Terraform settings(required providers)
+source attribute defines provider type
+Terraform installs providers from the Terraform Registry(default)
+example (aws) provider's source is defined as (hashicorp/aws) shorthand of (registry.terraform.io/hashicorp/aws)
+version attribute is optional, but terrfrm recomend it so that does not download configuration that is not necessary,by default it take latest version
+
+---
+provider "aws" {
+  region  = "us-west-2"
+}
+---
+The provider block configures specified provider, A provider is a plugin that Terraform uses to create and manage your resources
+
+---
+resource "aws_instance" "app_server" {
+  ami           = "ami-830c94e3"
+  instance_type = "t2.micro"
+
+  tags = {
+    Name = "ExampleAppServerInstance"
+  }
+}
+---
+Use resource blocks to define components of your infrastructure
+Resource blocks have two strings before the block: the resource type and the resource name
+For example, the ID for your EC2 instance is aws_instance.app_server
+Resource blocks contain arguments which you use to configure the resource. 
+
+
+---
+$ terraform init.
+
+Initializing a configuration directory downloads and installs the providers defined in the configuration
+the above command install aws provider in a hidden subdirectory (.terraform) of current directory
+Terraform also creates a lock file named .terraform.lock.hcl which specifies the exact provider versions used
+
+$ terraform validate
+your configuration is syntactically valid
+
+$ terraform fmt
+The terraform fmt command automatically updates configurations
+Terraform will print out the names of the files it modified, if any
+
+$ Terraform apply 
+Apply the configuration now with the terraform apply command
+Before it applies any changes, Terraform prints out the execution plan which describes the actions,terraform match your infrastructure configuration and then if any change there, it will apply 
+
+
+When you applied your configuration, Terraform wrote data into a file called (terraform.tfstate)
+
+
+The Terraform state file is the only way to see Terraform can track which resources it manages, and may contains sensitive information, so you must store your state file securely and restrict access to only trusted team members who need to manage your infrastructure. In production, we recommend storing your state remotely(https://developer.hashicorp.com/terraform/tutorials/cloud/cloud-migrate) with Terraform Cloud or Terraform Enterprise. Terraform also supports several other remote backends you can use to store and manage your state
+
+
+$terraform show
+Inspect the current state using terraform show
+
+
+$terraform state list
+list of the resources in your project's state.

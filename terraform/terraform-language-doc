@@ -1,0 +1,16 @@
+resource "aws_vpc" "main" {
+  cidr_block = var.base_cidr_block
+}
+
+<BLOCK TYPE> "<BLOCK LABEL>" "<BLOCK LABEL>" {
+  # Block body
+  <IDENTIFIER> = <EXPRESSION> # Argument
+}
+
+block is a container which contains some kind of objects(resources), Blocks have a block type, can have zero or more labels, and have a body that contains any number of arguments and nested blocks, Expressions represent a value of identifier
+
+root modules = top level module = the root module is the working directory where Terraform is invoked
+tree of child modules 
+
+sometime specific portions of an existing configuration files of terraform are override in a separate file e.g a human-edited configuration file in terraform language syntax  could be partially overridden using a programmatically-generated file in JSON syntax.
+file names are override.tf or override.tf.json
