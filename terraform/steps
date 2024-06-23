@@ -1,0 +1,41 @@
+$ teraform --version
+
+$ terraform --help
+
+------
+create file main.tf
+
+resource "random_string" random {
+  length = 16
+  }
+
+save it
+---
+$ terraform init           (it will create lock file of provider)
+
+$ terraform validate       (it check either code is correct or some error)
+
+$ terraform plane          (it will check the existance states compare with new states)
+
+$ terraform plane -out myplane  (to save your plane in file)
+
+$ terraform apply myplane        (it will do the actual changes)
+
+-------
+resource "random_string" random {
+  length = 10
+  }
+
+save it
+---
+
+$terraform apply
+ yes
+
+$ terradorm apply -auto-approve
+
+
+$ terraform plane -destroy   (it provodes details of destrroy)
+
+$ terraform destroy        (it destroyed)
+ yes

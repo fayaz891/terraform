@@ -1,0 +1,237 @@
+my-repo/
+├── Jenkinsfile
+├── Dockerfile
+└── terraform/
+    ├── main.tf
+    ├── variables.tf
+    ├── outputs.tf
+    ├── terraform.tfvars
+
+
+my-terraform-project/
+├── main.tf
+├── variables.tf
+├── outputs.tf
+├── terraform.tfvars
+├── README.md
+└── .gitignore
+
+my-terraform-project/
+├── infrastructure/
+│   ├── main.tf
+│   ├── variables.tf
+│   ├── outputs.tf
+│   └── ...
+├── modules/
+│   ├── module1/
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│   ├── module2/
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+├── environments/
+│   ├── dev/
+│   │   ├── main.tf
+│   │   └── terraform.tfvars
+│   ├── prod/
+│   │   ├── main.tf
+│   │   └── terraform.tfvars
+├── README.md
+└── .gitignore
+
+---
+pipeline {
+    agent any
+    
+    stages {
+        stage('Build') {
+            steps {
+                // Build your application, if needed
+                
+                // Install and execute Terraform commands
+                sh '''
+                curl -o terraform.zip https://releases.hashicorp.com/terraform/0.14.9/terraform_0.14.9_linux_amd64.zip
+                unzip terraform.zip
+                mv terraform /usr/local/bin/
+                terraform init
+                terraform plan -out=tfplan
+                '''
+            }
+        }
+        stage('Deploy') {
+            steps {
+                // Deploy your application, if needed
+                
+                // Apply the Terraform plan
+                sh 'terraform apply -auto-approve tfplan'
+            }
+        }
+    }
+}
+
+---
+#correct version
+pipeline {
+    agent any
+    
+    stages {
+        stage('Build') {
+            steps {
+                // Build your application, if needed
+                
+                // Download and execute Terraform commands
+                sh '''
+                curl -o terraform.zip https://releases.hashicorp.com/terraform/0.14.9/terraform_0.14.9_linux_amd64.zip
+                unzip terraform.zip
+                terraform init
+                terraform plan -out=tfplan
+                '''
+            }
+        }
+        stage('Deploy') {
+            steps {
+                // Deploy your application, if needed
+                
+                // Apply the Terraform plan
+                sh './terraform apply -auto-approve tfplan' #./terraform is because tf is install in the directory only not system level(mv terraform /usr/local/bin/)
+            }
+        }
+    }
+}
+
+---
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo "Installing Terraform"
+      - curl -o terraform.zip https://releases.hashicorp.com/terraform/0.14.9/terraform_0.14.9_linux_amd64.zip
+      - unzip terraform.zip
+      - mv terraform /usr/local/bin/
+  build:
+    commands:
+      - echo "Building and Deploying with Terraform"
+      - terraform init
+      - terraform plan -out=tfplan
+  post_build:
+    commands:
+      - terraform apply -auto-approve tfplan
+
+---
+#correct version
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo "Downloading and extracting Terraform"
+      - curl -o terraform.zip https://releases.hashicorp.com/terraform/0.14.9/terraform_0.14.9_linux_amd64.zip
+      - unzip terraform.zip
+  build:
+    commands:
+      - echo "Building and Deploying with Terraform"
+      - terraform init
+      - terraform plan -out=tfplan
+  post_build:
+    commands:
+      - ./terraform apply -auto-approve tfplan  
+---
+
+
+
+----
+pipeline {
+    agent any
+    
+    environment {
+        AWS_ACCESS_KEY_ID     = credentials('aws-access-key-id')
+        AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
+        AWS_REGION            = 'us-east-1'
+        ECR_REPO_NAME         = 'my-ecr-repo'
+        EKS_CLUSTER_NAME      = 'my-eks-cluster'
+    }
+    
+    stages {
+        stage('Build Docker Image') {
+            steps {
+                // Build your Docker image
+                sh 'docker build -t my-app .'
+            }
+        }
+        
+        stage('Push to ECR') {
+            steps {
+                // Authenticate with AWS ECR
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-ecr-credentials']]) {
+                    sh "aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+                }
+                
+                // Tag and push the image to ECR
+                sh "docker tag my-app:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}:latest"
+                sh "docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}:latest"
+            }
+        }
+        
+        stage('Deploy to EKS with Terraform') {
+            steps {
+                // Clone your Git repository
+                sh 'git clone https://github.com/your/repo.git'
+                
+                // Install Terraform (you should provide the correct version URL)
+                sh 'curl -o terraform.zip https://releases.hashicorp.com/terraform/0.14.9/terraform_0.14.9_linux_amd64.zip'
+                sh 'unzip terraform.zip'
+                sh 'mv terraform /usr/local/bin/'
+                
+                // Execute Terraform commands
+                dir('repo/terraform') {
+                    sh 'terraform init'
+                    sh 'terraform apply -auto-approve'
+                }
+                
+                // Deploy your application to EKS
+                dir('repo/app') {
+                    sh 'kubectl apply -f app-deployment.yaml'
+                }
+            }
+        }
+    }
+}
+-----
+-----
+version: 0.2
+
+env:
+  variables:
+    AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+    AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+    AWS_REGION: 'us-east-1'
+    ECR_REPO_NAME: 'my-ecr-repo'
+    EKS_CLUSTER_NAME: 'my-eks-cluster'
+
+phases:
+  pre_build:
+    commands:
+      - echo "Building Docker Image"
+      - docker build -t my-app .
+  build:
+    commands:
+      - echo "Pushing to ECR"
+      - aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+      - docker tag my-app:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}:latest
+      - docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}:latest
+  post_build:
+    commands:
+      - echo "Deploying to EKS with Terraform"
+      - curl -o terraform.zip https://releases.hashicorp.com/terraform/0.14.9/terraform_0.14.9_linux_amd64.zip
+      - unzip terraform.zip
+      - mv terraform /usr/local/bin/
+      - git clone https://github.com/your/repo.git
+      - cd repo/terraform
+      - terraform init
+      - terraform apply -auto-approve
+      - cd ../app
+      - kubectl apply -f app-deployment.yaml
+
