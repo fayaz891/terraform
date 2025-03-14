@@ -808,43 +808,43 @@ The tutorials I've created walk you through practical Terraform scenarios from b
 
 **Tutorial 1: Getting Started**
 
-Basic AWS provider configuration
+-- Basic AWS provider configuration
 
-Creating your first VPC
+-- Creating your first VPC
 
-Understanding the Terraform workflow (init, plan, apply, destroy)
+-- Understanding the Terraform workflow (init, plan, apply, destroy)
 
 **Tutorial 2: Production-Ready Infrastructure**
 
-Building a complete web infrastructure with proper networking
+-- Building a complete web infrastructure with proper networking
 
-Creating VPCs with public/private subnets
+-- Creating VPCs with public/private subnets
 
-Implementing security groups, EC2 instances, and load balancers
+-- Implementing security groups, EC2 instances, and load balancers
 
 **Tutorial 3: Advanced Concepts**
 
-Modularizing your Terraform code for reusability
+-- Modularizing your Terraform code for reusability
 
-Setting up remote state management with S3 and DynamoDB
+-- Setting up remote state management with S3 and DynamoDB
 
-Implementing state locking for team collaboration
+-- Implementing state locking for team collaboration
 
 **Tutorial 4: CI/CD Integration**
 
-Automating Terraform with GitHub Actions
+-- Automating Terraform with GitHub Actions
 
-Setting up proper testing and validation pipelines
+-- Setting up proper testing and validation pipelines
 
-Implementing secure workflows for infrastructure deployment
+-- Implementing secure workflows for infrastructure deployment
 
 **Tutorial 5: Managing Multiple Environments**
 
-Using workspaces to manage development, staging, and production
+-- Using workspaces to manage development, staging, and production
 
-Environment-specific configuration with variable files
+-- Environment-specific configuration with variable files
 
-Best practices for scaling your infrastructure
+-- Best practices for scaling your infrastructure
 
 
 ## Conclusion
