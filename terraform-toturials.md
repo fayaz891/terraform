@@ -805,34 +805,45 @@ terraform import aws_instance.example i-1234567890abcdef0
 ```
 
 The tutorials I've created walk you through practical Terraform scenarios from beginner to more advanced concepts, mirroring how Terraform is actually used in industry settings. Here's a breakdown of what's covered:
-Tutorial 1: Getting Started
+
+**Tutorial 1: Getting Started**
 
 Basic AWS provider configuration
+
 Creating your first VPC
+
 Understanding the Terraform workflow (init, plan, apply, destroy)
 
-Tutorial 2: Production-Ready Infrastructure
+**Tutorial 2: Production-Ready Infrastructure**
 
 Building a complete web infrastructure with proper networking
+
 Creating VPCs with public/private subnets
+
 Implementing security groups, EC2 instances, and load balancers
 
-Tutorial 3: Advanced Concepts
+**Tutorial 3: Advanced Concepts**
 
 Modularizing your Terraform code for reusability
+
 Setting up remote state management with S3 and DynamoDB
+
 Implementing state locking for team collaboration
 
-Tutorial 4: CI/CD Integration
+**Tutorial 4: CI/CD Integration**
 
 Automating Terraform with GitHub Actions
+
 Setting up proper testing and validation pipelines
+
 Implementing secure workflows for infrastructure deployment
 
-Tutorial 5: Managing Multiple Environments
+**Tutorial 5: Managing Multiple Environments**
 
 Using workspaces to manage development, staging, and production
+
 Environment-specific configuration with variable files
+
 Best practices for scaling your infrastructure
 
 
